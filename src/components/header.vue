@@ -12,11 +12,6 @@
       <li><a v-link="{name: 'login'}">运行管理</a></li>
       <li><a v-link="{name: 'login'}">人才培养</a></li>
       <li><a v-link="{name: 'login'}">开放交流</a></li>
-      <li v-if="!token"><a v-link="{name: 'login'}">登陆</a></li>
-      <template v-else>
-        <li><a v-link="{name: 'messages'}">未读消息<span class="h"  v-if="msgCount">{{ msgCount }}</span></a></li>
-        <li><a href="#" @click.prevent.stop="exit">退出</a></li>
-      </template>
 		</ul>
 	</header>
 </template>
@@ -46,40 +41,6 @@
       getters: {
         token: getToken,
         msgCount: getMsgCount,
-      },
-    },
-    ready() {
-      // 从cookie中获取accesstoken
-      if (document.cookie.length > 0) {
-        const arr = document.cookie.split(';');
-        let t;
-        for (let v of arr) {
-          v = v.trim();
-          if (v.startsWith('token=')) {
-            t = v.split('=')[1];
-            break;
-          }
-        }
-        // 改变token的状态，检验token的正确性，从而进行一系列初始化工作
-        if (t) {
-          this.changeToken(t);
-          this.checkToken(t)
-              .then(this.fetchUser)
-              .then((info) => {
-                this.changeLoginUser(info);
-                return info.loginname;
-              })
-              .then((name) => this.fetchCollection(name))
-              .then(() => this.fetchMsgCount(this.token))
-              .catch((e) => console.log(e));
-        }
-      }
-    },
-    methods: {
-      // 退出
-      exit() {
-        this.delToken();
-        this.$route.router.go({ name: 'index' });
       },
     },
   };
